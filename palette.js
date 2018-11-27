@@ -1,7 +1,7 @@
 class Palette {
   constructor(num) {
-    for (let i = 0; i < num; i++) {
-      this[`color${i}`] = this.randomColor();
+    for (let i = 1; i < num + 1; i++) {
+      this[`hex${i}`] = this.randomColor();
     }
   }
 
