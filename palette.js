@@ -18,3 +18,5 @@ class Palette {
     return hex[Math.floor(Math.random() * 16)]
   }
 }
+
+module.exports = Palette;

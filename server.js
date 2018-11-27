@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
-const colors = [1, 2, 3, 4, 5];
+const Palette = require('./palette');
 
 app.use(express.static('public'));
 
 app.get('/colors', (req, res) => {
+  const colors = new Palette(5)
   res.status(200).json(colors);
 });
 
