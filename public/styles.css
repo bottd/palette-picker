@@ -1,0 +1,58 @@
+body {
+  background-color: #f8f6f5;
+  color: #1e294b;
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+header {
+  background-color: #d44949;
+  color: #fff;
+  height: 20vh;
+  position: relative;
+  width: 100%;
+}
+
+.button-container {
+  bottom: 0;
+  position: absolute;
+}
+
+.header-button {
+  background-color: transparent;
+  border: none;
+  border-bottom: solid 3px transparent;
+  color: #fff;
+  font-size: 14px;
+}
+
+.header-button:hover {
+  border-bottom: solid 3px #fff;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  height: 70vh;
+  width: 100%;
+}
+
+.color-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 2%;
+}
+
+.color {
+  background-color: #adadad;
+  height: 100%;
+}
+
+.lock {
+  background-color: transparent;
+  border: 3px solid #adadad;
+  font-size: 32px;
+}
