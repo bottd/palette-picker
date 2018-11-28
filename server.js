@@ -42,6 +42,12 @@ app.get('/palettes', async (req, res) => {
   }
 });
 
+app.post('/projects', (req, res) => {
+  const project = req.body;
+  console.log(project);
+  res.status(200).json({project: project});
+});
+
 app.listen(3000, () => {
   console.log('Running on port 3000');
 });
