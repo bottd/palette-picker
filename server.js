@@ -1,16 +1,12 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
-const Palette = require('./palette');
 
+app.use(bodyParser.json());
 app.use(express.static('public'));
-
-app.get('/colors', (req, res) => {
-  const colors = new Palette(5);
-  res.status(200).json(colors);
-});
 
 app.get('/projects', async (req, res) => {
   try {
@@ -24,10 +20,13 @@ app.get('/projects', async (req, res) => {
 app.get('/projects/:id', async (req, res) => {
   try {
     const id = req.params.id;
+    const project = await database('projects')
+      .where('id', id)
+      .select();
     const palettes = await database('palettes')
       .where('project_id', id)
       .select();
-    res.status(200).json(palettes);
+    res.status(200).json({project, palettes});
   } catch (error) {
     res.status(500).json({error});
   }
@@ -42,10 +41,28 @@ app.get('/palettes', async (req, res) => {
   }
 });
 
-app.post('/projects', (req, res) => {
+app.get('/palettes/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const palettes = await database('palettes')
+      .where('id', id)
+      .select();
+    res.status(200).json(palettes);
+  } catch (error) {
+    res.status(500).json({error});
+  }
+});
+
+app.post('/projects', async (req, res) => {
   const project = req.body;
-  console.log(project);
-  res.status(200).json({project: project});
+  const id = await database('projects').insert(project, 'id');
+  res.status(200).json({id});
+});
+
+app.post('/palettes', async (req, res) => {
+  const palette = req.body;
+  const id = await database('palettes').insert(palette, 'id');
+  res.status(200).json({id});
 });
 
 app.listen(3000, () => {
