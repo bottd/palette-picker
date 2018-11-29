@@ -103,6 +103,7 @@ function blurOnEnter(e) {
   if (key === 13) {
     projectHeader.blur();
   }
+  console.log('did it work?');
 }
 
 setColors();
