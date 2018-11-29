@@ -40,6 +40,16 @@ function setColors() {
   });
 };
 
+async function loadProjects() {
+  const dropdown = document.querySelector('.dropdown');
+  const res = await fetch('api/v1/projects');
+  const projects = await res.json();
+  const projectLi = projects.map(project => (
+    `<li class="alternate-title" id='${project.id}'>${project.name}</li>`
+  ))
+  dropdown.innerHTML = projectLi.join('');
+}
+
 function toggleLock(e) {
   if (e.target.classList.contains('fa-lock-open')) {
     e.target.classList.remove('fa-lock-open');
@@ -61,3 +71,4 @@ function blurOnEnter(e) {
 }
 
 setColors();
+loadProjects();
