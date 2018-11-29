@@ -6,8 +6,15 @@
     <link rel='stylesheet' type='text/css' href='styles.css'/> </head>
   <body>
     <header>
-      <button class='hamburger'><i class="fas fa-bars"></i></button>
-      <h1>New Palette</h1>
+      <div class="project-container">
+        <i class="fas fa-caret-down"><ul class="dropdown">
+          <li class="alternate-title">Project 1</li>
+          <li class="alternate-title">Project 2</li>
+          <li class="alternate-title">Project 3</li>
+        </ul>
+        </i>
+        <input class="project-name" placeholder="Enter a new project name"/>
+      </div>
       <div class='button-container'>
         <button class='header-button'>All Palettes</button>
         <button class='header-button'>Generate New</button>
@@ -31,7 +38,7 @@
         <i class="fas fa-lock-open"></i>
       </div>
     </main>
-    <button class='shuffle'>Shuffle</button>
+    <button class='shuffle'>SHUFFLE</button>
   </body>
   <script type="text/javascript" src="./script.js"></script>
 </html>

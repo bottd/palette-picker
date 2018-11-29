@@ -10,9 +10,58 @@ body {
 header {
   background-color: #d44949;
   color: #fff;
-  height: 20vh;
+  height: 15vh;
   position: relative;
   width: 100%;
+}
+
+.project-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.project-name,
+.project-name::placeholder,
+.fa-caret-down {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+}
+
+.project-name:focus {
+  outline: 0;
+}
+
+.project-name {
+  padding-left: 1%;
+  width: 100%;
+}
+
+.dropdown {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 999;
+}
+
+.fa-caret-down {
+  position: relative;
+}
+
+.fa-caret-down:hover .alternate-title {
+  display: block;
+  position: relative;
+  z-index: 999;
+}
+
+.alternate-title {
+  display: none;
+  background-color: #d38181;
+  border-bottom: 1px solid #fff;
+  font-size: 24px;
+  width: 10vw;
 }
 
 .button-container {
@@ -59,4 +108,12 @@ main {
   padding: 2px 0 2px 0;
   text-align: center;
   width: 100%;
+}
+
+.shuffle {
+  background-color: #adadad;
+  border: none;
+  color: #fff;
+  width: 100%;
+  font-size: 32px;
 }
