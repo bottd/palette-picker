@@ -7,6 +7,7 @@ const database = require('knex')(configuration);
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
+app.set('port', process.env.PORT || 3000);
 
 app.get('/api/v1/projects', async (req, res) => {
   try {
@@ -65,6 +66,6 @@ app.post('/api/v1/palettes', async (req, res) => {
   res.status(200).json({id});
 });
 
-app.listen(3000, () => {
-  console.log('Running on port 3000');
+app.listen(app.get('port'), () => {
+  console.log(`Running on port ${app.get('port')}`);
 });
