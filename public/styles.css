@@ -40,20 +40,23 @@ main {
 }
 
 .color-card {
+  background-color: #adadad;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  margin: 2%;
-}
-
-.color {
-  background-color: #adadad;
+  position: relative;
   height: 100%;
 }
 
-.lock {
-  background-color: transparent;
+.fa-lock-open,
+.fa-lock {
+  position: absolute;
+  bottom: 0;
+  background-color: white;
   border: 3px solid #adadad;
+  border-color: #adadad;
   color: #adadad;
   font-size: 32px;
+  padding: 2px 0 2px 0;
+  text-align: center;
+  width: 100%;
 }

@@ -1,18 +1,14 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
-const Palette = require('./palette');
 
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
-app.get('/colors', (req, res) => {
-  const colors = new Palette(5);
-  res.status(200).json(colors);
-});
-
-app.get('/projects', async (req, res) => {
+app.get('/api/v1/projects', async (req, res) => {
   try {
     const projects = await database('projects').select();
     res.status(200).json(projects);
@@ -21,11 +17,40 @@ app.get('/projects', async (req, res) => {
   }
 });
 
-app.get('/projects/:id', async (req, res) => {
+app.get('/api/v1/projects/:id', async (req, res) => {
   try {
     const id = req.params.id;
+    const project = await database('projects')
+      .where('id', id)
+      .select();
+    res.status(200).json(project);
+  } catch (error) {
+    res.status(500).json({error});
+  }
+});
+
+app.post('/api/v1/projects', async (req, res) => {
+  const project = req.body;
+  const id = await database('projects').insert(project, 'id');
+  res.status(200).json({id});
+});
+
+app.get('/api/v1/projects/:project_id/palettes', async (req, res) => {
+  try {
+    const project_id = req.params.project_id
+    const palettes = await database('palettes').where('project_id', project_id).select();
+    res.status(200).json(palettes);
+  } catch (error) {
+    res.status(500).json({error});
+  }
+});
+
+app.get('/api/v1/projects/:project_id/palettes/:id', async (req, res) => {
+  try {
+    const project_id = req.params.project_id;
+    const id = req.params.id;
     const palettes = await database('palettes')
-      .where('project_id', id)
+      .where('id', id)
       .select();
     res.status(200).json(palettes);
   } catch (error) {
@@ -33,19 +58,11 @@ app.get('/projects/:id', async (req, res) => {
   }
 });
 
-app.get('/palettes', async (req, res) => {
-  try {
-    const palettes = await database('palettes').select();
-    res.status(200).json(palettes);
-  } catch (error) {
-    res.status(500).json({error});
-  }
-});
 
-app.post('/projects', (req, res) => {
-  const project = req.body;
-  console.log(project);
-  res.status(200).json({project: project});
+app.post('/api/v1/palettes', async (req, res) => {
+  const palette = req.body;
+  const id = await database('palettes').insert(palette, 'id');
+  res.status(200).json({id});
 });
 
 app.listen(3000, () => {
