@@ -33,7 +33,7 @@ app.get('/api/v1/projects/:id', async (req, res) => {
 app.post('/api/v1/projects', async (req, res) => {
   const project = req.body;
   const id = await database('projects').insert(project, 'id');
-  res.status(200).json({id});
+  res.status(200).json({id: id[0]});
 });
 
 app.put('/api/v1/projects/:id', async (req, res) => {
@@ -41,7 +41,6 @@ app.put('/api/v1/projects/:id', async (req, res) => {
     name: req.body.name,
     id: req.params.id,
   };
-  console.log(project);
   try {
     await database('projects')
       .where('id', project.id)
@@ -68,19 +67,20 @@ app.get('/api/v1/projects/:project_id/palettes/:id', async (req, res) => {
   try {
     const project_id = req.params.project_id;
     const id = req.params.id;
-    const palettes = await database('palettes')
+    const palette = await database('palettes')
       .where('id', id)
       .select();
-    res.status(200).json(palettes);
+    res.status(200).json(palette[0]);
   } catch (error) {
     res.status(500).json({error});
   }
 });
 
-app.post('/api/v1/palettes', async (req, res) => {
+app.post('/api/v1/projects/:project_id/palettes', async (req, res) => {
   const palette = req.body;
+  palette.project_id = req.params.project_id;
   const id = await database('palettes').insert(palette, 'id');
-  res.status(200).json({id});
+  res.status(200).json({id: id[0]});
 });
 
 app.listen(app.get('port'), () => {

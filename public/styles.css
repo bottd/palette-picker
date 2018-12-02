@@ -20,8 +20,8 @@ header {
   flex-direction: row;
 }
 
-.project-name,
-.project-name::placeholder,
+input,
+input::placeholder,
 .fa-caret-down {
   background-color: transparent;
   border: none;
@@ -29,11 +29,11 @@ header {
   font-size: 32px;
 }
 
-.project-name:focus {
+input:focus {
   outline: 0;
 }
 
-.project-name {
+input {
   padding-left: 1%;
   width: 100%;
 }

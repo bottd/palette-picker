@@ -1,16 +1,79 @@
 const cardContainer = document.querySelector('.card-container');
 const shuffleButton = document.querySelector('.shuffle');
 const projectHeader = document.querySelector('.project-name');
+const paletteHeader = document.querySelector('.palette-name');
+const prevButton = document.querySelector('.prev-btn');
+const nextButton = document.querySelector('.next-btn');
+const saveButton = document.querySelector('.save-btn');
+const newButton = document.querySelector('.new-btn');
 
 cardContainer.addEventListener('click', toggleLock);
 shuffleButton.addEventListener('click', setColors);
 projectHeader.addEventListener('keyup', blurOnEnter);
 projectHeader.addEventListener('blur', updateProjectName);
+saveButton.addEventListener('click', savePalette); newButton.addEventListener('click', newPalette);
+prevButton.addEventListener('click', () => cyclePalette(-1));
+nextButton.addEventListener('click', () => cyclePalette(1));
+
+let paletteIds = [];
+const palette = {
+  id: null,
+};
 
 const project = {
   name: '',
   id: null,
 };
+
+function newPalette() {
+  paletteHeader.value = '';
+  palette.id = null;
+  setColors();
+}
+
+async function savePalette() {
+  const hexVals = {};
+  const colors = document.querySelectorAll('.color');
+  colors.forEach((color, i) => (hexVals[`hex${i + 1}`] = color.innerText));
+  if (!project.id) {
+    const res = await fetch('/api/v1/projects', {
+      method: 'POST',
+      body: JSON.stringify({name: project.name}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const newId = await res.json();
+    project.id = newId;
+    loadProjects();
+  }
+  const res = await fetch(`/api/v1/projects/${project.id}/palettes`, {
+    method: 'POST',
+    body: JSON.stringify({name:paletteHeader.value, ...hexVals}),
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+  const pal = await res.json();
+  await setProject(project.id);
+  setPalette(pal.id);
+}
+
+function cyclePalette(num) {
+  if (!palette.id || !paletteIds.length) {
+    return;
+  }
+  let newId;
+  const currentPalette = paletteIds.indexOf(palette.id);
+  if (paletteIds[currentPalette + num]) {
+    newId = paletteIds[currentPalette + num];
+  } else if (num === 1) {
+    newId = paletteIds[0];
+  } else if (num === -1) {
+    newId = paletteIds[paletteIds.length - 1];
+  }
+  setPalette(newId);
+}
 
 function generateColors(num) {
   let colors = [];
@@ -50,41 +113,71 @@ async function loadProjects() {
     project =>
       `<li class="alternate-title" id='${project.id}'>${project.name}</li>`,
   );
-  dropdown.innerHTML = ('');
+  dropdown.innerHTML = '';
   dropdown.innerHTML = projectLi.join('');
   const projectNames = document.querySelectorAll('.alternate-title');
-  projectNames.forEach(name => name.addEventListener('click', setProject));
+  projectNames.forEach(name => name.addEventListener('click', selectProject));
 }
 
-async function setProject(e) {
+function selectProject(e) {
   project.name = e.target.innerText;
   project.id = e.target.id;
   projectHeader.value = project.name;
+  setProject();
+}
+
+async function setProject() {
   const res = await fetch(`api/v1/projects/${project.id}/palettes`);
   const palettes = await res.json();
   const colorCards = document.querySelectorAll('.color');
+  paletteIds = palettes.map(palette => palette.id);
   if (palettes.length === 0) {
     setColors();
     return;
   }
+  palette.id = paletteIds[0];
+  setPalette(palette.id);
+  console.log(paletteIds[0]);
+}
+
+async function setPalette(id) {
+  palette.id = id;
+  const res = await fetch(
+    `api/v1/projects/${project.id}/palettes/${palette.id}`,
+  );
+  const colors = await res.json();
+  paletteHeader.value = colors.name;
+  const colorCards = document.querySelectorAll('.color');
   colorCards.forEach((card, i) => {
-    card.style.borderColor = palettes[0][`hex${i + 1}`];
-    card.innerText = palettes[0][`hex${i + 1}`].toUpperCase();
-    card.parentElement.style.backgroundColor = palettes[0][`hex${i + 1}`];
+    card.style.borderColor = colors[`hex${i + 1}`];
+    card.innerText = colors[`hex${i + 1}`].toUpperCase();
+    card.parentElement.style.backgroundColor = colors[`hex${i + 1}`];
   });
 }
 
 async function updateProjectName(e) {
+  if (!project.id) {
+    return;
+  }
   project.name = e.target.value;
-  await fetch(`/api/v1/projects/${project.id}`, {
-    method: 'PUT',
-    body: JSON.stringify(project),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  if (project.id) {
+    await fetch(`/api/v1/projects/${project.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(project),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } else {
+    await fetch('/api/v1/projects', {
+      method: 'POST',
+      body: JSON.stringify({name: project.name}),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
   loadProjects();
-
 }
 
 function toggleLock(e) {
@@ -103,7 +196,6 @@ function blurOnEnter(e) {
   if (key === 13) {
     projectHeader.blur();
   }
-  console.log('did it work?');
 }
 
 setColors();
