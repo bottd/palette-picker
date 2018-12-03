@@ -51,6 +51,21 @@ app.put('/api/v1/projects/:id', async (req, res) => {
   }
 });
 
+app.delete('/api/v1/projects/:id', async (req, res) => {
+  const {id} = req.params;
+  try {
+    await database('palettes')
+      .where('project_id', id)
+      .del();
+    const project = await database('projects')
+      .where('id', id)
+      .del();
+    res.status(200).json({message: `project ${id} deleted`});
+  } catch (error) {
+    res.status(400).json({error});
+  }
+});
+
 app.get('/api/v1/projects/:project_id/palettes', async (req, res) => {
   try {
     const project_id = req.params.project_id;
@@ -81,6 +96,16 @@ app.post('/api/v1/projects/:project_id/palettes', async (req, res) => {
   palette.project_id = req.params.project_id;
   const id = await database('palettes').insert(palette, 'id');
   res.status(200).json({id: id[0]});
+});
+
+app.delete('/api/v1/projects/:project_id/palettes/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await database('palettes').where('id', id).del();
+    res.status(200).json({message: `palette ${id} deleted`});
+  } catch (error) {
+    res.status(500).json({error});
+  }
 });
 
 app.listen(app.get('port'), () => {
